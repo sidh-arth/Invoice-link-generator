@@ -28,13 +28,15 @@ class ClientInvoice(BaseModel):
     """ClientInvoice ::  Contains details of the Invoices related to a user """
     alphanumeric = RegexValidator(r'^[0-9a-zA-Z]*$', 'Only alphanumeric characters can be present in Invoice number')
 
-    user = models.ForeignKey(User, related_name='invoice_client', on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, related_name='invoice_client', on_delete=models.CASCADE)
+    client_name = models.CharField(max_length=255)
+    client_email = models.EmailField(max_length=255)
     invoice_number = models.CharField(max_length=30, unique=True, validators=[alphanumeric])
     project_name = models.CharField(max_length=255, null=True, blank=True)
     amount_charged = models.FloatField(default=0.0)
 
     def __str__(self):
-        return self.user.first_name + ' ' + self.user.last_name + ' - ' +self.invoice_number 
+        return self.client_name + ' - ' +self.invoice_number 
 
 
 class InvoiceLink(BaseModel):
@@ -45,4 +47,4 @@ class InvoiceLink(BaseModel):
     shared_with_customer = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.invoice.user.first_name + ' ' + self.invoice.user.last_name + ' - ' + self.invoice.invoice_number + ' - ' +self.payment_link 
+        return self.invoice.client_name + ' - ' + self.invoice.invoice_number + ' - ' +self.payment_link 
