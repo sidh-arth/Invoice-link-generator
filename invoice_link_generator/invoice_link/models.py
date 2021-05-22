@@ -25,19 +25,23 @@ class BaseModel(models.Model):
 
 class ClientInvoice(BaseModel):
     """ClientInvoice ::  Contains details of the Invoices related to a user """
-    user = models.OneToOneField(User, related_name='client', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='invoice_client', on_delete=models.CASCADE)
     invoice_number = models.CharField(max_length=13, unique=True)
+    # invoice_doc = models.FileField(null=True, blank=True)
     project_name = models.CharField(max_length=255, null=True, blank=True)
     amount_charged = models.FloatField(default=0.0)
 
     def __str__(self):
-        return self.user.firstname + ' ' + self.user.lastname + ' - ' +self.invoice_number 
+        return self.user.first_name + ' ' + self.user.last_name + ' - ' +self.invoice_number 
 
 
 class InvoiceLink(BaseModel):
     """InvoiceLink :: Contains all the links that are generated against each invoices """
-    invoice = models.ForeignKey(ClientInvoice, null=True, blank=True, on_delete=models.CASCADE, related_name='invoice_details')
-    invoice_link = models.CharField(max_length=255, unique=True)
+    invoice = models.ForeignKey(ClientInvoice, on_delete=models.CASCADE)
+    # invoice_link = models.models.URLField(max_length=200, unique=True)
+    # short_link = models.URLField(max_length=255, unique=True)
+    payment_link = models.TextField(unique=True)
+    short_link = models.TextField(null=True, blank=True)
     shared_with_customer = models.BooleanField(default=False)
 
     def __str__(self):
