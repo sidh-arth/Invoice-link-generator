@@ -133,7 +133,13 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'  # For swagger session auth
     ],
+    'EXCEPTION_HANDLER': 'invoice_link.exceptions.custom_exception_handler',
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',  # For swagger
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     
 }
+
+
+PAYMENT_BASE_URL = "http://www.payment-by-sid.com/"
+BITLY_GROUP = "Bl5m8wlYFQn"
+BITLY_TOKEN = "39a62b122a0cbdad499c5efb946196c02527fee9"

@@ -16,7 +16,6 @@ from .serializers import ClientInvoiceSerializer, InvoiceLinkSerializer
 
 
 class CustomObtainAuthToken(ObtainAuthToken):
-
     def post(self, request, *args, **kwargs):
         try:
             serializer = self.serializer_class(data=request.data, context={'request': request})
@@ -52,7 +51,6 @@ class CustomObtainAuthToken(ObtainAuthToken):
         return Response(response_data, status=response_status)
 
 
-
 class UserLogout(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -66,11 +64,37 @@ class UserLogout(APIView):
         return Response(response_data)
 
 
-
 class ClientInvoiceViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = ClientInvoice.objects.all()
     serializer_class = ClientInvoiceSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        data = serializer.data
+        response_data = {
+            "status_code": "200",
+            "status": True,
+            "message": 'Invoice List',
+            "data": data
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            response = super().create(request)
+        except Exception as e:
+            print(str(e))
+        response_data = {
+            "status_code": "201",
+            "status": True,
+            "message": "Invoice record created successfully",
+            "data": response.data
+        }
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
 
 class InvoiceLinkViewSet(viewsets.ModelViewSet):
