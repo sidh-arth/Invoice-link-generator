@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+{% csrf_token %}
+<head>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"> </script> 
+	<script type="text/javascript" src="{% static '/js/login.js' %}"> </script> 
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+</head>
+
+<body>
+
+
+<div class="container">
+
+    <div id="div_login">
+        <h1>Login</h1>
+        <div id="message" style="color: #eb1313"></div>
+        <div>
+            <input type="text" class="textbox" id="txt_uname" name="txt_uname" placeholder="Username" />
+        </div>
+        <div>
+            <input type="password" class="textbox" id="txt_pwd" name="txt_pwd" placeholder="Password"/>
+        </div>
+        <div>
+            <input type="submit" value="Submit" name="but_submit" id="but_submit" />
+        </div>
+    </div>
+
+</div>
+
+</body>
+
+</html>

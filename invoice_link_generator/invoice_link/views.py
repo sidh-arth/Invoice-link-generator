@@ -1,21 +1,35 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User, Group, Permission
-from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import authenticate
 
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import viewsets, status, filters, serializers
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import renderers
 
 from .models import ClientInvoice, InvoiceLink
 from .serializers import ClientInvoiceSerializer, InvoiceLinkSerializer
+
+
 # Create your views here.
 
 
 
+class SignUpPage(APIView):
+    renderer_classes = [renderers.TemplateHTMLRenderer]
+    # template_name = 'invoice_link/signup.html'
+
+    def get(self, request):
+        queryset = User.objects.all()
+        return render(request, 'invoice_link/signup.html', {})
+
+
 class CustomObtainAuthToken(ObtainAuthToken):
+    renderer_classes = (renderers.JSONRenderer, renderers.TemplateHTMLRenderer)
+
     def post(self, request, *args, **kwargs):
         try:
             serializer = self.serializer_class(data=request.data, context={'request': request})
@@ -39,7 +53,7 @@ class CustomObtainAuthToken(ObtainAuthToken):
                 }
             else:
                 response_data = {
-                    'status_code': "400",
+                    'status_code': "200",
                     'status': False,
                     'message': "User already logged in! Please log out from all your active sessions and try again",
                     'data': {"token": token.key, "is_user_already_logged_in": True}
@@ -48,6 +62,8 @@ class CustomObtainAuthToken(ObtainAuthToken):
             response_status = status.HTTP_400_BAD_REQUEST
         elif response_data['status_code'] == '200':
             response_status = status.HTTP_200_OK
+            # if request.accepted_renderer.format == 'html':
+            #     return render(request, 'invoice_link/invoice_list.html', {})
         return Response(response_data, status=response_status)
 
 
@@ -68,6 +84,7 @@ class ClientInvoiceViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = ClientInvoice.objects.all()
     serializer_class = ClientInvoiceSerializer
+    renderer_classes = (renderers.JSONRenderer, renderers.TemplateHTMLRenderer)
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -79,6 +96,8 @@ class ClientInvoiceViewSet(viewsets.ModelViewSet):
             "message": 'Invoice List',
             "data": data
         }
+        if request.accepted_renderer.format == 'html':
+            return Response({'data': data}, template_name='invoice_link/invoice_list.html')
         return Response(response_data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
@@ -98,6 +117,7 @@ class ClientInvoiceViewSet(viewsets.ModelViewSet):
 
 
 class InvoiceLinkViewSet(viewsets.ModelViewSet):
+
     permission_classes = (IsAuthenticated,)
     queryset = InvoiceLink.objects.all()
     serializer_class = InvoiceLinkSerializer
