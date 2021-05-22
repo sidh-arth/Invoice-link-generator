@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User, Group, AbstractUser
+from django.core.validators import RegexValidator
 # Create your models here.
 
 
@@ -25,9 +26,10 @@ class BaseModel(models.Model):
 
 class ClientInvoice(BaseModel):
     """ClientInvoice ::  Contains details of the Invoices related to a user """
+    alphanumeric = RegexValidator(r'^[0-9a-zA-Z]*$', 'Only alphanumeric characters can be present in Invoice number')
+
     user = models.ForeignKey(User, related_name='invoice_client', on_delete=models.CASCADE)
-    invoice_number = models.CharField(max_length=13, unique=True)
-    # invoice_doc = models.FileField(null=True, blank=True)
+    invoice_number = models.CharField(max_length=30, unique=True, validators=[alphanumeric])
     project_name = models.CharField(max_length=255, null=True, blank=True)
     amount_charged = models.FloatField(default=0.0)
 
@@ -38,11 +40,9 @@ class ClientInvoice(BaseModel):
 class InvoiceLink(BaseModel):
     """InvoiceLink :: Contains all the links that are generated against each invoices """
     invoice = models.ForeignKey(ClientInvoice, on_delete=models.CASCADE)
-    # invoice_link = models.models.URLField(max_length=200, unique=True)
-    # short_link = models.URLField(max_length=255, unique=True)
     payment_link = models.TextField(unique=True)
-    short_link = models.TextField(null=True, blank=True)
+    short_link = models.CharField(max_length=255, null=True, blank=True)
     shared_with_customer = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.invoice.user.firstname + ' ' + self.invoice.user.lastname + ' - ' +self.invoice_link 
+        return self.invoice.user.first_name + ' ' + self.invoice.user.last_name + ' - ' + self.invoice.invoice_number + ' - ' +self.payment_link 

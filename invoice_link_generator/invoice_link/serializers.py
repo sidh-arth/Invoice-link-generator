@@ -17,7 +17,7 @@ class ClientInvoiceSerializer(serializers.ModelSerializer):
     def get_invoice_link(self, obj):
         invoice_link_obj = InvoiceLink.objects.filter(invoice=obj).order_by('-id').first()
         if invoice_link_obj:
-           return invoice_link_obj.invoice_link
+           return invoice_link_obj.payment_link
 
     def get_short_link(self, obj):
         invoice_link_obj = InvoiceLink.objects.filter(invoice=obj).order_by('-id').first()
